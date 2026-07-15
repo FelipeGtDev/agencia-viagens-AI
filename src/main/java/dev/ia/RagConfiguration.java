@@ -13,7 +13,8 @@ import dev.langchain4j.data.segment.TextSegment;
 public class RagConfiguration {
 
     @Produces
-    public RetrievalAugmentor retrievalAugmentor(EmbeddingStore<TextSegment> embeddingStore, EmbeddingModel embeddingModel) {
+    public RetrievalAugmentor retrievalAugmentor(EmbeddingStore<TextSegment> embeddingStore,
+            EmbeddingModel embeddingModel) {
         return DefaultRetrievalAugmentor.builder()
                 .contentRetriever(EmbeddingStoreContentRetriever.builder()
                         .embeddingStore(embeddingStore)
