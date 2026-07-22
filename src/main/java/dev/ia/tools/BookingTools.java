@@ -1,10 +1,13 @@
 package dev.ia.tools;
 
+import dev.ia.Category;
 import dev.ia.model.Booking;
 import dev.ia.services.BookingService;
 import dev.langchain4j.agent.tool.Tool;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
+import java.util.List;
 
 @ApplicationScoped
 public class BookingTools {
@@ -19,15 +22,23 @@ public class BookingTools {
                 .orElse("Reserva com ID " + bookingId + " não encontrada.");
     }
 
-    @Tool("""
-    Cancela uma reserva existente.
-    
-    Para confirmar o cancelamento, é necessário fornecer o ID da reserva (bookingId)
-    e o último nome do cliente (customerLastName).
-    """)
-    public String cancelBooking(long bookingId, String customerLastName) {
-        return bookingService.cancelBooking(bookingId, customerLastName)
-                .map(booking -> "Reserva " + bookingId + " cancelada com sucesso. Status atual: " + booking.status())
-                .orElse("Não foi possível cancelar a reserva. Verifique se o ID da reserva e o sobrenome do cliente estão corretos.");
+    @Tool("Cancela uma reserva existente com base no seu ID (bookingId). O usuário deve estar autenticado.")
+    public String cancelBooking(long bookingId) {
+        return bookingService.cancelBooking(bookingId)
+                .map(b -> "Reserva " + b.id() + " cancelada com sucesso.")
+                .orElse("Não foi possível cancelar a reserva. Verifique se o ID está correto e se você tem permissão.");
+    }
+
+    @Tool("Lista os pacotes de viagem disponíveis para uma determinada categoria (ex: ADVENTURE, TREASURES).")
+    public String listPackagesByCategory(Category category) {
+        List<Booking> packages = bookingService.findPackagesByCategory(category);
+
+        if (packages.isEmpty()) {
+            return "Nenhum pacote encontrado para a categoria: " + category;
+        }
+
+        return "Pacotes encontrados para a categoria '" + category + "': " + packages.stream()
+                .map(Booking::destination)
+                .toList().toString();
     }
 }

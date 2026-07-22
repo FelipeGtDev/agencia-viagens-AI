@@ -1,5 +1,6 @@
 package dev.ia.model;
 
+import dev.ia.Category;
 import dev.ia.model.enums.BookingStatus;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ public record Booking(
         String destination,
         LocalDate startDate,
         LocalDate endDate,
-        BookingStatus status
+        BookingStatus status,
+        Category category
 ) {
 }
